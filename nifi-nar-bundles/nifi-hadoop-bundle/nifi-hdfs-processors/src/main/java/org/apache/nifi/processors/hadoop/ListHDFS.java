@@ -550,7 +550,7 @@ public class ListHDFS extends AbstractHadoopProcessor {
         values.put(IS_DIRECTORY, fileStatus.isDirectory());
         values.put(IS_SYM_LINK, fileStatus.isSymlink());
         values.put(IS_ENCRYPTED, fileStatus.isEncrypted());
-        values.put(IS_ERASURE_CODED, fileStatus.isErasureCoded());
+        // values.put(IS_ERASURE_CODED, fileStatus.isErasureCoded());
 
         return new MapRecord(getRecordSchema(), values);
     }

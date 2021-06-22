@@ -20,7 +20,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CreateFlag;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.permission.FsCreateModes;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -329,13 +328,12 @@ public class PutHDFS extends AbstractHadoopProcessor {
                                 } else {
                                   final EnumSet<CreateFlag> cflags = EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE);
 
-                                  final Boolean ignoreLocality = context.getProperty(IGNORE_LOCALITY).asBoolean();
-                                  if (ignoreLocality) {
-                                    cflags.add(CreateFlag.IGNORE_CLIENT_LOCALITY);
-                                  }
+                                //   final Boolean ignoreLocality = context.getProperty(IGNORE_LOCALITY).asBoolean();
+                                //   if (ignoreLocality) {
+                                //     cflags.add(CreateFlag.IGNORE_CLIENT_LOCALITY);
+                                //   }
 
-                                  fos = hdfs.create(tempCopyFile, FsCreateModes.applyUMask(FsPermission.getFileDefault(),
-                                      FsPermission.getUMask(hdfs.getConf())), cflags, bufferSize, replication, blockSize,
+                                  fos = hdfs.create(tempCopyFile, FsPermission.getFileDefault(), cflags, bufferSize, replication, blockSize,
                                       null, null);
                                 }
 
