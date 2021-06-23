@@ -55,12 +55,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs-client</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-distributed-cache-client-service-api</artifactId>
         </dependency>
@@ -122,6 +116,44 @@
     </build>
 
     <profiles>
+    	<profile>
+    		<!-- In order to support MAPR, exclude the hadoop-hdfs-client into default profile when `mapr.version` property is not provided -->
+    		<id>default</id>
+			<activation>
+				<property>
+					<name>!mapr.version</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+		            <groupId>org.apache.hadoop</groupId>
+		            <artifactId>hadoop-hdfs-client</artifactId>
+		            <version>${hadoop.version}</version>
+		            <scope>provided</scope>
+		        </dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<!-- In order to support MAPR, include maprfs as a replacement for hadoop-hdfs-client into default profile when `mapr.version` property is provided -->
+			<id>mapr</id>
+			<activation>
+				<property>
+					<name>mapr.version</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.mapr.hadoop</groupId>
+					<artifactId>maprfs</artifactId>
+					<version>${mapr.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.hadoop</groupId>
+					<artifactId>hadoop-mapreduce-client-contrib</artifactId>
+					<version>${hadoop.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
         <profile>
             <!-- This profile, activating when compiling on Java versions above 1.8, provides configuration changes to
                  allow NiFi to be compiled on those JDKs. -->

@@ -510,19 +510,9 @@ public class PutHDFSTest {
 
         @Override
         public FSDataOutputStream create(final Path f, final FsPermission permission, final boolean overwrite, final int bufferSize, final short replication,
-                                         final long blockSize, final Progressable progress) {
+                                         final long blockSize, final Progressable progress) throws IOException {
             pathToStatus.put(f, newFile(f, permission));
-            if(failOnClose) {
-                return new FSDataOutputStream(new ByteArrayOutputStream(), new Statistics("")) {
-                    @Override
-                    public void close() throws IOException {
-                        super.close();
-                        throw new IOException("Fail on close");
-                    }
-                };
-            } else {
-                return new FSDataOutputStream(new ByteArrayOutputStream(), new Statistics(""));
-            }
+            return new FSDataOutputStream(new ByteArrayOutputStream(), new Statistics(""));
         }
 
         @Override

@@ -978,6 +978,8 @@
             <properties>
                 <!-- Vendor-specific version number included here as default,
                     should be overridden on the command-line <hadoop.version>2.7.0-mapr-1602</hadoop.version> -->
+		<mapr.version>6.2.0.0-mapr</mapr.version>
+		<hadoop.version>2.7.5.0-mapr-710</hadoop.version>
             </properties>
         </profile>
         <profile>
