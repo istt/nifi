@@ -21,14 +21,11 @@ import com.google.common.cache.CacheBuilder;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.State;
-import org.apache.nifi.web.security.token.LoginAuthenticationToken;
-import org.apache.nifi.web.security.util.CacheKey;
-import org.apache.nifi.web.security.util.IdentityProviderUtils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.apache.nifi.web.security.util.CacheKey;
 
 import static org.apache.nifi.web.security.oidc.StandardOidcIdentityProvider.OPEN_ID_CONNECT_SUPPORT_IS_NOT_CONFIGURED;
 
@@ -193,41 +190,8 @@ public class OidcService {
             throw new IllegalStateException(OPEN_ID_CONNECT_SUPPORT_IS_NOT_CONFIGURED);
         }
 
-        // Retrieve Login Authentication Token
-        return identityProvider.exchangeAuthorizationCodeforLoginAuthenticationToken(authorizationGrant);
-    }
-
-    /**
-     * Exchanges the specified authorization grant for an access token.
-     *
-     * @param authorizationGrant authorization grant
-     * @return an Access Token string
-     * @throws IOException exceptional case for communication error with the OpenId Connect provider
-     */
-    public String exchangeAuthorizationCodeForAccessToken(final AuthorizationGrant authorizationGrant) throws Exception {
-        if (!isOidcEnabled()) {
-            throw new IllegalStateException(OPEN_ID_CONNECT_SUPPORT_IS_NOT_CONFIGURED);
-        }
-
-        // Retrieve access token
-        return identityProvider.exchangeAuthorizationCodeForAccessToken(authorizationGrant);
-    }
-
-    /**
-     * Exchanges the specified authorization grant for an ID Token.
-     *
-     * @param authorizationGrant authorization grant
-     * @return an ID Token string
-     * @throws IOException exceptional case for communication error with the OpenId Connect provider
-     */
-    public String exchangeAuthorizationCodeForIdToken(final AuthorizationGrant authorizationGrant) throws IOException {
-        if (!isOidcEnabled()) {
-            throw new IllegalStateException(OPEN_ID_CONNECT_SUPPORT_IS_NOT_CONFIGURED);
-        }
-
-        // Retrieve ID token
-        return identityProvider.exchangeAuthorizationCodeForIdToken(authorizationGrant);
-    }
+        final CacheKey oidcRequestIdentifierKey = new CacheKey(oidcRequestIdentifier);
+        final String nifiJwt = retrieveNifiJwt(authorizationGrant);
 
     /**
      * Stores the NiFi Jwt.
@@ -248,6 +212,17 @@ public class OidcService {
         } catch (final ExecutionException e) {
             throw new IllegalStateException("Unable to store the login authentication token.");
         }
+    }
+
+    /**
+     * Exchange the authorization code to retrieve a NiFi JWT.
+     *
+     * @param authorizationGrant authorization grant
+     * @return NiFi JWT
+     * @throws IOException exceptional case for communication error with the OpenId Connect provider
+     */
+    public String retrieveNifiJwt(final AuthorizationGrant authorizationGrant) throws IOException {
+        return identityProvider.exchangeAuthorizationCode(authorizationGrant);
     }
 
     /**
